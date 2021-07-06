@@ -23,4 +23,15 @@ export class WxController {
   getProfile(@Request() req) {
     return req.user;
   }
+
+  //test
+  @Get('')
+  test() {
+    this.wxService.getAccessToken().then((data) => {
+      if (data.code === 1) {
+        return this.wxService.subscribeMessageSend(data.access_token);
+      }
+      return;
+    });
+  }
 }
