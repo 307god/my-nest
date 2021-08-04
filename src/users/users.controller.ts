@@ -1,8 +1,16 @@
-import { Body, Controller, Request, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Request,
+  Post,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
-import { User } from './user.entity';
+import { ValidationPipe } from 'src/common/pipe/validation.pipe';
+import { RegisterInfoDTO } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -32,8 +40,9 @@ export class UsersController {
     }
   }
 
+  @UsePipes(new ValidationPipe())
   @Post('register')
-  async register(@Body() body: any): Promise<any> {
+  async register(@Body() body: RegisterInfoDTO): Promise<any> {
     return await this.usersService.register(body);
   }
 
