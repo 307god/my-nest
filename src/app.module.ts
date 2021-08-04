@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { WxModule } from './wx/wx.module';
+import { FileController } from './file/file.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { WxModule } from './wx/wx.module';
       logging: true,
     }),
   ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController, UsersController, FileController],
   providers: [AppService],
 })
 export class AppModule {}
