@@ -19,6 +19,7 @@ import { isEmpty, forEach } from 'lodash';
 
 @Controller('file')
 export class FileController {
+  // 上传单个文件
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
@@ -26,6 +27,7 @@ export class FileController {
     console.log(file);
   }
 
+  // 上传文件数组
   @Post('upload1')
   @UseInterceptors(FilesInterceptor('files'))
   uploadFile1(@UploadedFiles() files: Express.Multer.File[], @Body() body) {
@@ -47,6 +49,7 @@ export class FileController {
     }
   }
 
+  // 上传多个文件
   @Post('upload2')
   @UseInterceptors(
     FileFieldsInterceptor([
