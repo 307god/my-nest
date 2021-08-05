@@ -9,22 +9,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  AnyFilesInterceptor,
   FileFieldsInterceptor,
   FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
-import { createWriteStream } from 'fs';
-import { join } from 'path';
-import { isEmpty, forEach } from 'lodash';
+import { isEmpty, map } from 'lodash';
 
 @Controller('file')
 export class FileController {
   // 上传单个文件
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
-    console.log(body.name);
-    console.log(file);
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return { path: file.path };
   }
 
   // 上传文件数组
@@ -34,19 +32,9 @@ export class FileController {
     if (!body.name || files.length === 0) {
       throw new HttpException('请求参数错误', HttpStatus.FORBIDDEN);
     }
-    for (const file of files) {
-      const writeImage = createWriteStream(
-        join(
-          __dirname,
-          '..',
-          '..',
-          'upload',
-          `${body.name}-${Date.now()}-${file.originalname}`,
-        ),
-      );
-
-      writeImage.write(file.buffer);
-    }
+    return map(files, (file) => {
+      return { path: file.path };
+    });
   }
 
   // 上传多个文件
@@ -70,19 +58,22 @@ export class FileController {
     if (!body.name || isEmpty(files)) {
       throw new HttpException('请求参数错误', HttpStatus.FORBIDDEN);
     }
-    forEach(files, (v, k) => {
+    return map(files, (v, k) => {
       for (const file of v) {
-        const writeImage = createWriteStream(
-          join(
-            __dirname,
-            '..',
-            '..',
-            'upload',
-            `${body.name}-${k}-${Date.now()}-${file.originalname}`,
-          ),
-        );
-        writeImage.write(file.buffer);
+        return { path: file.path };
       }
+    });
+  }
+
+  // 上传任何文件
+  @Post('upload3')
+  @UseInterceptors(AnyFilesInterceptor())
+  uploadFile3(@UploadedFiles() files: Express.Multer.File[], @Body() body) {
+    if (!body.name || isEmpty(files)) {
+      throw new HttpException('请求参数错误', HttpStatus.FORBIDDEN);
+    }
+    return map(files, (file) => {
+      return { path: file.path };
     });
   }
 }
